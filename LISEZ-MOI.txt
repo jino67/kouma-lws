@@ -1,0 +1,49 @@
+KOUMA, installation chez LWS (hébergement mutualisé)
+====================================================
+
+Contenu du paquet
+  kouma.site-lws.zip   le site : à décompresser dans le dossier du domaine kouma.site
+  kouma-base.sql       la base de données : à importer UNE fois dans phpMyAdmin
+  identifiants-admin.txt   le compte administrateur et son mot de passe
+
+Le zip contient des secrets (kouma/.env : mot de passe de la base, clés d'IA, mot de passe de la boîte e-mail).
+Ne l'envoyez à personne et ne le mettez pas dans un dépôt.
+
+1. Panneau LWS, PHP : choisir PHP 8.2 ou plus (8.3 conseillé) pour kouma.site.
+2. Gestionnaire de fichiers LWS : ouvrir le dossier du domaine kouma.site (celui qui contient la page d'attente de
+   l'hébergeur), envoyer kouma.site-lws.zip, puis « Extraire » à cet endroit. Après extraction, ce dossier contient
+   .htaccess, index.php, build/, widget/ et le dossier kouma/. La page d'attente de l'hébergeur (index.html) peut être
+   supprimée ; sinon .htaccess la contourne.
+   SUPPRIMER ENSUITE kouma.site-lws.zip du serveur : il contient les mots de passe (kouma/.env) et, laissé dans le
+   dossier du domaine, il serait téléchargeable par n'importe qui. Pareil pour kouma-base.sql après l'import.
+3. phpMyAdmin (lien reçu par e-mail de LWS) : cliquer la base sinus1658531_2dgjay, onglet « Importer », choisir
+   kouma-base.sql, valider. Elle crée les tables, les offres, le compte administrateur et l'assistant de la page d'accueil.
+   (Le fichier commence par « USE sinus1658531_2dgjay » : il marche même importé depuis l'onglet du serveur, sans base
+   cliquée. Si phpMyAdmin répond « #1046 Aucune base n'a été sélectionnée » avec une ancienne copie du fichier,
+   cliquer d'abord la base dans la colonne de gauche, puis « Importer ».)
+4. Vérifier dans un navigateur que ces deux adresses répondent 403 ou 404, jamais un contenu :
+     https://kouma.site/kouma/.env
+     https://kouma.site/kouma/storage/logs/
+5. Certificat HTTPS gratuit (Let's Encrypt / AutoSSL) dans le panneau LWS. Une fois https://kouma.site vérifié seulement :
+   - décommenter la ligne « Header always set Strict-Transport-Security » dans .htaccess ;
+   - dans kouma/.env, décommenter SESSION_SECURE_COOKIE=true.
+6. Tâche planifiée (panneau LWS, « Tâches CRON »), toutes les minutes, pour les rappels de demandes, les relectures de
+   sites et les abonnements :
+     /usr/local/bin/php  CHEMIN_DU_DOSSIER/kouma/artisan schedule:run
+   (le chemin complet du dossier est indiqué dans le gestionnaire de fichiers LWS ; la commande php peut s'appeler
+   différemment, voir l'aide LWS « Tâches CRON »).
+7. Connexion : https://kouma.site/login avec contac@kouma.site et le mot de passe de identifiants-admin.txt. Changer ce mot de
+   passe dans « Mon profil ».
+8. Essai de l'e-mail : « Mot de passe oublié » sur la page de connexion avec contac@kouma.site. Le message arrive dans le
+   webmail https://mail.kouma.site. Sinon, vérifier MAIL_PASSWORD dans kouma/.env.
+9. Dans Administration, Paramètres : renseigner le numéro WhatsApp commercial (le bouton WhatsApp du site n'apparaît
+   qu'avec un numéro), la raison sociale et l'adresse de l'éditeur (pages juridiques). Puis Search Console : voir docs/SEO.md.
+
+Ce que fait le serveur tout seul
+  - La base est MySQL (kouma/.env, DB_*). Les sessions et le cache y sont aussi.
+  - Les erreurs s'écrivent dans kouma/storage/logs/ (un fichier par jour, 14 jours gardés).
+  - Les documents envoyés par les clients sont dans kouma/storage/app/private/, jamais servis au public.
+
+Mise à jour du site plus tard : remplacer les dossiers kouma/app, kouma/resources, kouma/routes, kouma/config,
+kouma/database, kouma/vendor (si les dépendances changent) et build/, sans toucher à kouma/.env ni kouma/storage.
+Les nouvelles tables se créent avec « php artisan migrate --force » (SSH) ou avec un nouveau .sql de migration.

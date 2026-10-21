@@ -1,0 +1,32 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-pTVK1dZg.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BlBw7MCU.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/playground/index.js",
+      "resources/js/effects.js"
+    ]
+  },
+  "resources/js/effects.js": {
+    "file": "assets/effects-CfRSKwAf.js",
+    "name": "effects",
+    "src": "resources/js/effects.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/effects-BNWJ7Zcm.css"
+    ]
+  },
+  "resources/js/playground/index.js": {
+    "file": "assets/index-BW-ghywC.js",
+    "name": "index",
+    "src": "resources/js/playground/index.js",
+    "isDynamicEntry": true
+  }
+}
